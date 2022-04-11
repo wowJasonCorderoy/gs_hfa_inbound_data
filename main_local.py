@@ -15,7 +15,7 @@ def is_correctFileName(fileName: str = None, regex: str = r".*Inbound Report.*xl
 
     Args:
         fileName (str, optional): name of file. Defaults to None.
-        regex (str, optional): regex expression to evaluate. Defaults to r".*service level report.*xls[x]?$".
+        regex (str, optional): regex expression to evaluate. Defaults to r".*Inbound Report.*xls[x]?$".
 
     Returns:
         bool: if True then regex matched fileName else False
