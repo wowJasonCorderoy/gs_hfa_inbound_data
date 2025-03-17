@@ -12,16 +12,15 @@ import openpyxl
 #### Declare functions
 def is_correctFileName(fileName: str = None, regex: str = r".*Inbound Report.*xls[x]?$") -> bool:
     """[summary]
-
+    
     Args:
         fileName (str, optional): name of file. Defaults to None.
         regex (str, optional): regex expression to evaluate. Defaults to r".*Inbound Report.*xls[x]?$".
-
+    
     Returns:
         bool: if True then regex matched fileName else False
     """
     import re
-
     if re.match(regex, fileName, re.IGNORECASE):
         return True
     else:
@@ -47,23 +46,24 @@ def get_date(filename: str):
     formatted_date = datetime.datetime.strptime(extract_date_clean, "%Y-%m-%d")#.strftime("%Y-%m-%d")
     return formatted_date
 
-def load_hfa_inbound_data(file_path: str, da_date: datetime.date, site: str, sheet_name: str = "Sheet1"):
-    headers = ['DESCRIPTION', 'ID', 'MANUFACTUREDDATE', 'PRODUCTID', 'STOCKINGPOINTID', 'SUPPLIERID', 'USERQUANTITY', 'SAPDELIVERYDATETIME']
+def load_hfa_inbound_data(file_path: str, da_date: datetime.date, site: str, sheet_name: str = "Service Kill"):
+    headers = ['DESCRIPTION', 'ID', 'MANUFACTUREDDATE', 'PRODUCTID', 'STOCKINGPOINTID', 'SUPPLIERID', 'USERQUANTITY', 'SAPDELIVERYDATETIME', 'WOWSUPPLIER']
     dtypes = {'DESCRIPTION': 'str', 
               'ID': 'str', 
               'PRODUCTID': 'str',
               'STOCKINGPOINTID': 'str',
               'SUPPLIERID': 'str',
               'USERQUANTITY': np.float64,
+              'WOWSUPPLIER': 'str',
             }
     parse_dates = ['MANUFACTUREDDATE', 'SAPDELIVERYDATETIME']
     try:
-        df = pd.read_excel(file_path, names=headers, dtype=dtypes, parse_dates=parse_dates, usecols="A:H", sheet_name=sheet_name)
+        df = pd.read_excel(file_path, names=headers, dtype=dtypes, parse_dates=parse_dates, usecols="A:I", sheet_name=sheet_name)
     except:
-        df = pd.read_excel(file_path, names=headers, dtype=dtypes, parse_dates=parse_dates, usecols="A:H", sheet_name=0)
+        df = pd.read_excel(file_path, names=headers, dtype=dtypes, parse_dates=parse_dates, usecols="A:I", sheet_name=0)
     df['filename_date'] = da_date
     df['filename_site'] = site
-    return ("hfa_inbound",df)
+    return ("hfa_inbound2",df)
 
 ### Save to bigquery
 def get_bq_credentials():
@@ -75,7 +75,7 @@ def get_bq_credentials():
     except:
         client = bigquery.Client(project=PROJECT_ID)
     return client
-    
+
 #### Declare constants
 PROJECT_ID = 'gcp-wow-pvc-grnstck-prod'
 
@@ -87,7 +87,7 @@ CREDS_FILE_LOC = project_creds_file_map.get(PROJECT_ID)
 
 now_utc = datetime.now(timezone.utc)
 
-filename = "HFA Inbound Report 07 04 2022.xlsx"
+filename = "HFA Inbound Report Beef 06 03 2025.xlsx"
 file_path = os.path.abspath(filename)
 da_date = get_date(filename)
 da_date_string = da_date.strftime("%Y-%m-%d")
@@ -98,7 +98,7 @@ def run_local():
     if not is_correctFileName(filename):
             print(f"File {filename} is not correctly named. ABORTING.")
             return
-
+    
     file_contents_md5 = hashlib.md5(open(filename,'rb').read()).hexdigest()
     
     func_2_run = [load_hfa_inbound_data]

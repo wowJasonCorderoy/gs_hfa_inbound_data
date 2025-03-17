@@ -135,9 +135,9 @@ def load_hfa_inbound_data(file_path: str, da_date: datetime.date, site: str, spe
             }
     parse_dates = ['MANUFACTUREDDATE', 'SAPDELIVERYDATETIME']
     try:
-        df = pd.read_excel(file_path, names=headers, dtype=dtypes, parse_dates=parse_dates, usecols="A:H", sheet_name=sheet_name)
+        df = pd.read_excel(file_path, names=headers, dtype=dtypes, parse_dates=parse_dates, usecols="A:I", sheet_name=sheet_name)
     except:
-        df = pd.read_excel(file_path, names=headers, dtype=dtypes, parse_dates=parse_dates, usecols="A:H", sheet_name=0)
+        df = pd.read_excel(file_path, names=headers, dtype=dtypes, parse_dates=parse_dates, usecols="A:I", sheet_name=0)
     df['filename_date'] = da_date
     df['filename_site'] = site
     df['filename_species'] = species
