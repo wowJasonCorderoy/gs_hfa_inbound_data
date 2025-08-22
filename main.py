@@ -141,7 +141,7 @@ def load_hfa_inbound_data(file_path: str, da_date: datetime.date, site: str, spe
     df['filename_date'] = da_date
     df['filename_site'] = site
     df['filename_species'] = species
-    return ("hfa_inbound2gen2",df)
+    return ("hfa_inbound2",df)
 
 def run(event, context):
     """Triggered by a change to a Cloud Storage bucket.
